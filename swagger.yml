@@ -1,0 +1,250 @@
+openapi: 3.0.0
+info:
+  title: Trails Flask REST API
+  description: An API about hiking trails and their features
+  version: 1.0.0
+
+servers:
+  - url: /api
+
+components:
+  schemas:
+    Trail:
+      type: object
+      required:
+        - TrailName
+      properties:
+        TrailID:
+          type: integer
+          description: Unique ID of the trail
+        TrailName:
+          type: string
+          description: Name of the trail
+        TrailSummary:
+          type: string
+          description: Short summary of the trail
+        TrailDescription:
+          type: string
+          description: Description of the trail
+        Difficulty:
+          type: string
+          description: Difficulty level (Easy, Medium, Hard)
+        Location:
+          type: string
+          description: City, County, Country of the trail
+        Length:
+          type: number
+          format: float
+          description: Total length of the trail (in miles or km)
+        ElevationGain:
+          type: number
+          format: float
+          description: Approximate elevation gain along the trail
+        RouteType:
+          type: string
+          description: E.g. "Circular" or "Point to point"
+
+    Feature:
+      type: object
+      required:
+        - TrailFeature
+      properties:
+        TrailFeatureID:
+          type: integer
+          description: Unique ID of the trail feature
+        TrailFeature:
+          type: string
+          description: Name of a specific feature (e.g., "Dog-Friendly")
+
+  parameters:
+    trail_name:
+      name: trail_name
+      in: path
+      required: true
+      schema:
+        type: string
+      description: Name of the trail to operate on
+
+    feature_id:
+      name: feature_id
+      in: path
+      required: true
+      schema:
+        type: integer
+      description: ID of the feature to operate on
+
+paths:
+  /trails:
+    get:
+      operationId: trails.read_all
+      tags:
+        - Trails
+      summary: Read the list of all trails
+      responses:
+        "200":
+          description: Successfully retrieved list of trails
+    post:
+      operationId: trails.create
+      tags:
+        - Trails
+      summary: Create a new trail
+      requestBody:
+        description: Trail to create
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Trail"
+              x-body-name: trail_data
+      responses:
+        "201":
+          description: Successfully created the trail
+
+  /trails/{trail_name}:
+    get:
+      operationId: trails.read_one
+      tags:
+        - Trails
+      summary: Read one trail by name
+      parameters:
+        - $ref: "#/components/parameters/trail_name"
+      responses:
+        "200":
+          description: Successfully retrieved the trail
+        "404":
+          description: Trail not found
+
+    put:
+      operationId: trails.update
+      tags:
+        - Trails
+      summary: Update an existing trail by name
+      parameters:
+        - $ref: "#/components/parameters/trail_name"
+      requestBody:
+        description: Trail data to update
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Trail"
+      responses:
+        "200":
+          description: Successfully updated the trail
+        "404":
+          description: Trail not found
+
+    delete:
+      operationId: trails.delete
+      tags:
+        - Trails
+      summary: Delete a trail by name
+      parameters:
+        - $ref: "#/components/parameters/trail_name"
+      responses:
+        "204":
+          description: Successfully deleted the trail
+        "404":
+          description: Trail not found
+
+  /features:
+    get:
+      operationId: features.read_all
+      tags:
+        - Features
+      summary: Read the list of all features
+      responses:
+        "200":
+          description: Successfully retrieved features
+    post:
+      operationId: features.create
+      tags:
+        - Features
+      summary: Create a new feature
+      requestBody:
+        description: Feature to create
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Feature"
+              x-body-name: feature_data
+      responses:
+        "201":
+          description: Successfully created the feature
+
+  /features/{feature_id}:
+    get:
+      operationId: features.read_one
+      tags:
+        - Features
+      summary: Read one feature by ID
+      parameters:
+        - $ref: "#/components/parameters/feature_id"
+      responses:
+        "200":
+          description: Successfully retrieved the feature
+        "404":
+          description: Feature not found
+    put:
+      operationId: features.update
+      tags:
+        - Features
+      summary: Update an existing feature
+      parameters:
+        - $ref: "#/components/parameters/feature_id"
+      requestBody:
+        description: Feature data to update
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Feature"
+      responses:
+        "200":
+          description: Successfully updated the feature
+        "404":
+          description: Feature not found
+    delete:
+      operationId: features.delete
+      tags:
+        - Features
+      summary: Delete a feature
+      parameters:
+        - $ref: "#/components/parameters/feature_id"
+      responses:
+        "204":
+          description: Successfully deleted the feature
+        "404":
+          description: Feature not found
+
+  /trails/{trail_name}/features/{feature_id}:
+    post:
+      operationId: trail_features.link_feature_to_trail
+      tags:
+        - Trails
+        - Features
+      summary: Link a feature to a trail (by trail name)
+      parameters:
+        - $ref: "#/components/parameters/trail_name"
+        - $ref: "#/components/parameters/feature_id"
+      responses:
+        "200":
+          description: Successfully linked feature to trail
+        "404":
+          description: Trail or Feature not found
+
+    delete:
+      operationId: trail_features.remove_feature_from_trail
+      tags:
+        - Trails
+        - Features
+      summary: Remove a feature from a trail (by trail name)
+      parameters:
+        - $ref: "#/components/parameters/trail_name"
+        - $ref: "#/components/parameters/feature_id"
+      responses:
+        "200":
+          description: Successfully removed feature from trail
+        "404":
+          description: Trail or Feature not found

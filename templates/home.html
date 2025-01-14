@@ -1,0 +1,39 @@
+ <!-- templates/home.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Trails</title>
+</head>
+<body>
+  <h1>All Trails</h1>
+
+  {% for t in trails %}
+    <h2>{{ t.TrailName }}</h2>
+    <ul>
+      <li><strong>Summary:</strong> {{ t.TrailSummary }}</li>
+      <li><strong>Description:</strong> {{ t.TrailDescription }}</li>
+      <li><strong>Difficulty:</strong> {{ t.Difficulty }}</li>
+      <li><strong>Location:</strong> {{ t.Location }}</li>
+      <li><strong>Length:</strong> {{ t.Length }} km</li>
+      <li><strong>Elevation Gain:</strong> {{ t.ElevationGain }} metres</li>
+      <li><strong>Route Type:</strong> {{ t.RouteType }}</li>
+
+      <li>
+        <strong>Features:</strong>
+        {% if t.features %}
+          <ul>
+          {% for feat in t.features %}
+            <li>{{ feat.TrailFeature }}</li>
+          {% endfor %}
+          </ul>
+        {% else %}
+          None
+        {% endif %}
+      </li>
+    </ul>
+    <hr>
+  {% endfor %}
+
+</body>
+</html>
